@@ -41,7 +41,7 @@ export default defineConfig({
         popup: resolve(__dirname, 'src/ui/popup/index.html'),
         options: resolve(__dirname, 'src/ui/options/index.html'),
         devtools: resolve(__dirname, 'src/devtools/index.html'),
-        welcome: resolve(__dirname, 'public/welcome.html'),
+        welcome: resolve(__dirname, 'src/ui/welcome/index.html'),
         demo: resolve(__dirname, 'src/demo/index.html'),
         background: resolve(__dirname, 'src/background/index.ts'),
         content: resolve(__dirname, 'src/content/index.ts'),
