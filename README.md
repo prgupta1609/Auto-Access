@@ -272,3 +272,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Install-blue.svg)](https://chrome.google.com/webstore/detail/autoaccess/extension-id)
 [![GitHub](https://img.shields.io/badge/GitHub-View%20Source-black.svg)](https://github.com/autoaccess/autoaccess)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da.svg)](https://discord.gg/autoaccess)
+#   C I   F i x  
+ 
