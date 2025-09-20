@@ -20,15 +20,30 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 9
+          version: 10
+      
+      - name: Verify pnpm workspace
+        run: |
+          echo "📋 Checking pnpm-workspace.yaml..."
+          cat pnpm-workspace.yaml
+          echo "✅ pnpm-workspace.yaml is valid"
       
       - name: Install dependencies
-        run: pnpm install
+        run: |
+          echo "📦 Installing dependencies..."
+          pnpm install --frozen-lockfile
+          echo "✅ Dependencies installed successfully"
       
       - name: Build extension
-        run: pnpm build
-      
-      - name: Verify build
         run: |
+          echo "🔨 Building extension..."
+          pnpm build
           echo "✅ Build completed successfully!"
+      
+      - name: Verify build output
+        run: |
+          echo "📁 Build output verification:"
           ls -la dist/
+          echo "📊 Build size:"
+          du -sh dist/
+          echo "✅ Build verification complete"
