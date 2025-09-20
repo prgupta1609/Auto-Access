@@ -1,0 +1,150 @@
+name: Release to Chrome Web Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release'
+        required: true
+        default: '1.0.0'
+      environment:
+        description: 'Release environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      
+      - name: Install dependencies
+        run: pnpm install
+      
+      - name: Build extension
+        run: pnpm build
+      
+      - name: Package extension
+        run: pnpm package
+      
+      - name: Download package
+        uses: actions/download-artifact@v3
+        with:
+          name: autoaccess-extension
+          path: ./
+      
+      - name: Upload to Chrome Web Store
+        uses: samuelmeuli/action-chrome-extension@v1
+        with:
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}
+          file-path: autoaccess.zip
+          publish: ${{ github.event.inputs.environment == 'production' }}
+      
+      - name: Notify deployment
+        if: always()
+        run: |
+          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+            echo "🚀 AutoAccess v${{ github.event.inputs.version }} has been released to Chrome Web Store!"
+          else
+            echo "🧪 AutoAccess v${{ github.event.inputs.version }} has been uploaded to Chrome Web Store (staging)"
+          fi
+      
+      - name: Create deployment status
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          if [ "$STATUS" = "success" ]; then
+            echo "✅ Deployment successful"
+          else
+            echo "❌ Deployment failed"
+          fi
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: release
+    if: always()
+    steps:
+      - name: Notify Discord
+        if: github.event.inputs.environment == 'production'
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: |
+            🚀 **AutoAccess v${{ github.event.inputs.version }}** has been released!
+            
+            **New Features:**
+            - Enhanced accessibility auditing
+            - Improved AI-powered image captioning
+            - Better keyboard navigation
+            - Updated UI/UX
+            
+            **Download:** [Chrome Web Store](https://chrome.google.com/webstore/detail/autoaccess/extension-id)
+            
+            **Support:** [GitHub Issues](https://github.com/autoaccess/autoaccess/issues)
+      
+      - name: Update documentation
+        if: github.event.inputs.environment == 'production'
+        run: |
+          echo "📚 Documentation update needed for version ${{ github.event.inputs.version }}"
+          # Here you would typically update documentation, changelog, etc.
+
+  rollback:
+    runs-on: ubuntu-latest
+    needs: release
+    if: failure()
+    steps:
+      - name: Rollback notification
+        run: |
+          echo "🔄 Rollback initiated for AutoAccess v${{ github.event.inputs.version }}"
+          echo "Previous version should be restored manually if needed"
+      
+      - name: Create rollback issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Rollback needed for v${{ github.event.inputs.version }}`,
+              body: `
+              ## Rollback Required
+              
+              The release of AutoAccess v${{ github.event.inputs.version }} has failed.
+              
+              **Environment:** ${{ github.event.inputs.environment }}
+              **Failed at:** ${{ github.run_id }}
+              **Workflow:** ${{ github.workflow }}
+              
+              ### Action Required
+              
+              1. Investigate the failure
+              2. Fix the issues
+              3. Re-run the release workflow
+              4. Or rollback to previous version if critical
+              
+              ### Logs
+              
+              Check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for detailed logs.
+              `,
+              labels: ['bug', 'release', 'rollback']
+            });

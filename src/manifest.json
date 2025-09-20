@@ -1,0 +1,83 @@
+{
+  "manifest_version": 3,
+  "name": "AutoAccess - AI-Powered Accessibility",
+  "version": "1.0.0",
+  "description": "Complete accessibility solution with AI-powered OCR, TTS, STT, and WCAG compliance tools",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "tabs",
+    "background",
+    "unlimitedStorage",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AutoAccess",
+    "default_icon": {
+      "16": "icons/icon-16.svg",
+      "32": "icons/icon-32.svg",
+      "48": "icons/icon-48.svg",
+      "128": "icons/icon-128.svg"
+    }
+  },
+  "options_page": "options.html",
+  "devtools_page": "devtools.html",
+  "icons": {
+    "16": "icons/icon-16.svg",
+    "32": "icons/icon-32.svg",
+    "48": "icons/icon-48.svg",
+    "128": "icons/icon-128.svg"
+  },
+        "web_accessible_resources": [
+          {
+            "resources": [
+              "assets/*",
+              "icons/*",
+              "toolbar.html",
+              "models/*",
+              "welcome.html",
+              "demo.html"
+            ],
+            "matches": ["<all_urls>"]
+          }
+        ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "commands": {
+    "toggle-global-mode": {
+      "suggested_key": {
+        "default": "Alt+A"
+      },
+      "description": "Toggle Global Accessibility Mode"
+    },
+    "toggle-tts": {
+      "suggested_key": {
+        "default": "Alt+R"
+      },
+      "description": "Toggle Text-to-Speech"
+    },
+    "toggle-stt": {
+      "suggested_key": {
+        "default": "Alt+S"
+      },
+      "description": "Toggle Speech-to-Text"
+    }
+  }
+}
