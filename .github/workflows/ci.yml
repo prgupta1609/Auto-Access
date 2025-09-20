@@ -7,10 +7,11 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -22,28 +23,20 @@ jobs:
         with:
           version: 10
       
-      - name: Verify pnpm workspace
-        run: |
-          echo "📋 Checking pnpm-workspace.yaml..."
-          cat pnpm-workspace.yaml
-          echo "✅ pnpm-workspace.yaml is valid"
-      
       - name: Install dependencies
         run: |
-          echo "📦 Installing dependencies..."
-          pnpm install --frozen-lockfile
-          echo "✅ Dependencies installed successfully"
+          echo "Installing dependencies..."
+          pnpm install
+          echo "Dependencies installed successfully!"
       
-      - name: Build extension
+      - name: Build project
         run: |
-          echo "🔨 Building extension..."
+          echo "Building project..."
           pnpm build
-          echo "✅ Build completed successfully!"
+          echo "Build completed successfully!"
       
-      - name: Verify build output
+      - name: Verify build
         run: |
-          echo "📁 Build output verification:"
+          echo "Verifying build output..."
           ls -la dist/
-          echo "📊 Build size:"
-          du -sh dist/
-          echo "✅ Build verification complete"
+          echo "✅ Build verification complete!"
