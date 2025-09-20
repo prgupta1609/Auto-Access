@@ -190,11 +190,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/prgupta1609/Auto-Access/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/prgupta1609/Auto-Access/discussions)
 - **Email**: priyagupta08506@gmail.com & himanshuofficialuserid@gmail.com
 
 ---
 
 
 **Made with ❤️ for a more accessible web**
+
